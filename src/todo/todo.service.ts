@@ -9,18 +9,20 @@ import { Model } from 'mongoose';
 export class TodoService {
   constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) {}
 
-  async create(createTodoDto: CreateTodoDto) {
-    const createdTodo = new this.todoModel(createTodoDto);
+  async create(createTodoDto: CreateTodoDto, userId: string) {
+    const createdTodo = new this.todoModel({ ...createTodoDto, owner: userId });
 
     return createdTodo.save();
   }
 
-  findAll() {
-    return this.todoModel.find();
+  findAll(userId: string) {
+    return this.todoModel.find({ owner: userId }).select('status text');
   }
 
-  async findOne(id: string) {
-    const res = await this.todoModel.findById(id);
+  async findOne(id: string, userId: string) {
+    const res = await this.todoModel
+      .findOne({ _id: id, owner: userId })
+      .select('status text');
 
     if (!res) {
       throw new NotFoundException(`todo with id #${id} was not found`);
@@ -29,9 +31,9 @@ export class TodoService {
     return res;
   }
 
-  async update(id: string, updateTodoDto: UpdateTodoDto) {
+  async update(id: string, updateTodoDto: UpdateTodoDto, userId: string) {
     const res = await this.todoModel.findOneAndUpdate(
-      { _id: id },
+      { _id: id, owner: userId },
       updateTodoDto,
       {
         new: true,
@@ -44,8 +46,8 @@ export class TodoService {
     return res;
   }
 
-  async remove(id: string) {
-    const res = await this.todoModel.deleteOne({ _id: id });
+  async remove(id: string, userId: string) {
+    const res = await this.todoModel.deleteOne({ _id: id, owner: userId });
 
     if (res.deletedCount === 0) {
       throw new NotFoundException(`todo with id #${id} was not found`);

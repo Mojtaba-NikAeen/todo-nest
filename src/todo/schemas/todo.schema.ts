@@ -9,7 +9,7 @@ export type TodoDocument = Todo & Document;
 @Schema()
 export class Todo {
   @Prop({ required: true })
-  name: string;
+  text: string;
 
   @Prop({ default: 'NOT_DONE' })
   status: TodoStatus;

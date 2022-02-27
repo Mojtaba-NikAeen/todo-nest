@@ -4,7 +4,7 @@ import { TodoStatus } from '../schemas/todo.schema';
 export class UpdateTodoDto {
   @IsOptional()
   @IsNotEmpty()
-  name: string;
+  text: string;
 
   @IsEnum(TodoStatus)
   status: TodoStatus;

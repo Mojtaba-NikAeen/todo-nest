@@ -3,7 +3,7 @@ import { TodoStatus } from '../schemas/todo.schema';
 
 export class CreateTodoDto {
   @IsNotEmpty()
-  name: string;
+  text: string;
 
   @IsOptional()
   @IsEnum(TodoStatus)
